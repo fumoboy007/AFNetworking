@@ -159,7 +159,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 @synthesize redirectResponse = _redirectResponse;
 @synthesize lock = _lock;
 
-+ (void)networkRequestThreadEntryPoint:(id)__unused object {
++ (void) __attribute__((noreturn)) networkRequestThreadEntryPoint:(id)__unused object {
 	@autoreleasepool {
 		[[NSThread currentThread] setName:@"AFNetworking"];
 		
@@ -168,7 +168,11 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 		// Add dummy port so that run loop never exits
 		[runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
 		
-		[runLoop run];
+		do {
+			@autoreleasepool {
+				[runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+			}
+		} while (YES);
 	}
 }
 
